@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.iverdon.vhrlixi.mapper.QuotationProductMapper" >
+  <resultMap id="BaseResultMap" type="cn.iverdon.vhrlixi.model.QuotationProduct" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="clientNum" property="clientNum" jdbcType="VARCHAR" />
+    <result column="productNum" property="productNum" jdbcType="INTEGER" />
+  </resultMap>
+
+  <insert id="insert">
+    insert into quotation_product (clientNum,productNum)
+    values (#{clientNum,jdbcType=VARCHAR}, #{id,jdbcType=INTEGER})
+  </insert>
+
+  <delete id="deleteByQuoNum" parameterType="string">
+    delete from quotation_product
+    where clientNum = #{quotationNum,jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="insertByName">
+    insert into quotation_prduct (clientNum,productNum)
+    values (#{clientNum,jdbcType=VARCHAR},)
+  </insert>
+
+  <insert id="insertAll">
+    insert into quotation_product (clientNum,productNum)
+    values
+    <foreach collection="array" item="product" separator="," >
+      (#{quotationNum,jdbcType=VARCHAR},#{product.id,jdbcType=INTEGER})
+    </foreach>
+  </insert>
+
+  <delete id="deleteQuoProducts">
+    delete from quotation_product
+    where clientNum = #{quotationNum,jdbcType=INTEGER}
+    and productNum in
+    <foreach collection="array" item="product" open="(" close=")" separator=",">
+      #{product.id,jdbcType=INTEGER}
+    </foreach>
+  </delete>
+
+  <update id="updateBatch">
+    <foreach collection="array" item="product" >
+      update quotation_product
+      set quantity = #{product.sum}, price = #{product.price}
+      where clientNum = #{quotationNum} and productNum = #{product.id}
+    </foreach>
+  </update>
+</mapper>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.iverdon.vhrlixi.mapper.QuotationMapper" >
+    <resultMap id="BaseResultMap" type="cn.iverdon.vhrlixi.model.Quotation" >
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="quotationNum" property="quotationNum" jdbcType="VARCHAR" />
+        <result column="clientNum" property="clientNum" jdbcType="VARCHAR" />
+        <result column="client" property="client" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" ></result>
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="isOffer" property="isOffer" jdbcType="BIT" />
+        <result column="department" property="department" jdbcType="VARCHAR" />
+        <result column="price" property="price" jdbcType="REAL" />
+        <result column="cost" property="cost" jdbcType="REAL" />
+        <result column="clientUrl" property="clientUrl" jdbcType="VARCHAR" />
+        <result column="isOrder" property="isOrder" jdbcType="BIT" />
+        <result column="isCost" property="isCost" jdbcType="BIT" />
+        <result column="isTax" property="isTax" jdbcType="BIT" />
+    </resultMap>
+
+    <resultMap id="QuotationWithProduct" type="cn.iverdon.vhrlixi.model.Quotation" extends="BaseResultMap">
+        <collection property="products" ofType="cn.iverdon.vhrlixi.model.Product">
+            <id column="productId" property="id"></id>
+            <result column="productName" property="name"></result>
+            <result column="productCost" property="cost"></result>
+            <result column="productPrice" property="price"></result>
+            <result column="productUrl" property="url"></result>
+            <result column="productSum" property="sum"></result>
+            <result column="productType" property="type"></result>
+        </collection>
+    </resultMap>
+
+    <select id="getQuotationByPage" resultMap="BaseResultMap">
+        select * from quotation
+        <if test="quotation.name != null and quotation.name != ''">
+            where quotation.name like concat('%',#{quotation.name},'%')
+        </if>
+        <if test="page != null and size != null">
+            limit #{page},#{size};
+        </if>
+    </select>
+
+    <select id="getTotal" resultType="long">
+        select count(*) from quotation
+        <where>
+            <if test="quotation!=null">
+                <if test="quotation.name != null and quotation.name != ''">
+                    and quotation.name like concat('%',#{quotation.name},'%')
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <select id="getLatestNum" resultType="string">
+        SELECT quotationNum FROM quotation ORDER BY createTime DESC LIMIT 0,1;
+    </select>
+
+    <select id="getQuotationWithProducts" resultMap="QuotationWithProduct">
+        SELECT q.*, p.`id` as 'productId', p.`name` as 'productName', p.`price` as 'productPrice', qp.`quantity` as 'productSum' ,
+        p.cost as 'productCost', p.url as 'productUrl',p.`type` as 'productType'
+        FROM quotation q LEFT JOIN quotation_product qp ON qp.clientNum = q.clientNum
+        LEFT JOIN product p ON p.id=qp.productNum WHERE q.quotationNum = #{quotationNum}
+    </select>
+
+    <insert id="insertQuotation" parameterType="cn.iverdon.vhrlixi.model.Quotation">
+        insert into quotation (quotationNum, clientNum, client, name, createTime, remark, department, isTax)
+        values (#{quotationNum,jdbcType=VARCHAR}, #{clientNum,jdbcType=VARCHAR}, #{client,jdbcType=VARCHAR},
+        #{name,jdbcType=VARCHAR}, NOW(), #{remark,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR}, #{isTax,jdbcType=TINYINT})
+    </insert>
+
+    <delete id="deleteQuotation" parameterType="string">
+        delete from quotation
+        where quotationNum = #{quotationNum,jdbcType=VARCHAR}
+    </delete>
+
+    <update id="updateQuotation" parameterType="cn.iverdon.vhrlixi.model.Quotation">
+        update quotation
+        <set>
+            <if test="clientNum != null">
+                clientNum = #{clientNum,jdbcType=VARCHAR},
+            </if>
+            <if test="client != null">
+                client = #{client,jdbcType=VARCHAR},
+            </if>
+            <if test="clientUrl != null">
+                client = #{clientUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="isOffer != null">
+                isOffer = #{isOffer,jdbcType=BOOLEAN},
+            </if>
+            <if test="isCost != null">
+                isCost = #{isCost,jdbcType=BOOLEAN},
+            </if>
+            <if test="isOrder != null">
+                isOrder = #{isOrder,jdbcType=BOOLEAN},
+            </if>
+            <if test="isTax!=null">
+                isTax = #{isTax,jdbcType=BOOLEAN},
+            </if>
+            <if test="department!=null">
+                department = #{department,jdbcType=VARCHAR},
+            </if>
+            <if test="cost!=null">
+                cost = #{cost,jdbcType=FLOAT},
+            </if>
+            <if test="price!=null">
+                price = #{price,jdbcType=FLOAT},
+            </if>
+        </set>
+        where quotationNum = #{quotationNum,jdbcType=VARCHAR}
+    </update>
+</mapper>

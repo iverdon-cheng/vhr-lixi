@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="cn.iverdon.vhrlixi.mapper.MaterialMapper" >
+  <resultMap id="BaseResultMap" type="cn.iverdon.vhrlixi.model.Material" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="materialCode" property="materialCode" jdbcType="VARCHAR" />
+    <result column="quantity" property="quantity" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="CHAR" />
+    <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="specification" property="specification" jdbcType="VARCHAR" />
+    <result column="handler" property="handler" jdbcType="VARCHAR" />
+    <result column="weight" property="weight" jdbcType="REAL" />
+  </resultMap>
+
+<!--  <insert id="addMaterial" parameterType="cn.iverdon.vhrlixi.model.Material">-->
+
+<!--  </insert>-->
+
+  <select id="getLatestNumByClient" parameterType="string" resultType="string">
+    select materialCode from material where materialCode like concat(#{materialCode},'%')
+    order by updateTime desc limit 1
+  </select>
+
+  <select id="isMaterial" parameterType="cn.iverdon.vhrlixi.model.Material" resultType="int">
+    select count(*) from material where name = #{m.name} and specification = #{m.specification}
+  </select>
+
+  <insert id="addMaterial" parameterType="cn.iverdon.vhrlixi.model.Material">
+    insert into material (materialCode,quantity,type,updateTime,name,specification,weight,handler)
+    values (#{materialCode},#{quantity},#{type},NOW(),#{name},#{specification},#{weight},#{handler})
+  </insert>
+
+  <delete id="deleteMaterial">
+    delete from material where id = #{id}
+  </delete>
+
+  <update id="inMaterial">
+    update material set quantity = #{num} where id = #{id}
+  </update>
+
+  <select id="getMaterial" parameterType="int" resultMap="BaseResultMap">
+    select * from material where id = #{id}
+  </select>
+
+  <select id="getMaterialByPage" resultMap="BaseResultMap">
+    select * from material
+    <if test="material != null and material.name != ' '">
+      where material.name like concat('%',#{material.name},'%')
+    </if>
+    <if test="page != null and size != null">
+      limit #{page},#{size};
+    </if>
+  </select>
+
+  <select id="getTotal" resultType="long">
+    select count(*) from material
+    <where>
+      <if test="material != null ">
+        <if test="material.name != null and material.name != ''">
+          and material.name like concat('%',#{material.name},'%')
+        </if>
+      </if>
+    </where>
+  </select>
+
+</mapper>

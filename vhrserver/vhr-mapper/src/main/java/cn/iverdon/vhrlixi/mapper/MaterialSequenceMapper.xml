@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="cn.iverdon.vhrlixi.mapper.MaterialSequenceMapper" >
+    <resultMap id="BaseResultMap" type="cn.iverdon.vhrlixi.model.MaterialSequence" >
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="materialId" property="materialId" jdbcType="INTEGER" />
+        <result column="preId" property="preId" jdbcType="INTEGER" />
+        <result column="nextId" property="nextId" jdbcType="INTEGER" />
+    </resultMap>
+
+    <insert id="insertMaterialSequence" parameterType="cn.iverdon.vhrlixi.model.MaterialSequence">
+        insert into material_sequence (materialId, preId, nextId)
+        values (#{materialId},#{preId},#{nextId})
+    </insert>
+
+    <select id="getMaterialSequence" parameterType="int" resultMap="BaseResultMap">
+        select * from material_sequence where materialId = #{id}
+    </select>
+
+</mapper>

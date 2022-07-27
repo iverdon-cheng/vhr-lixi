@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.iverdon.vhrlixi.mapper.PurchaseMapper" >
+
+    <resultMap id="BaseResultMap" type="cn.iverdon.vhrlixi.model.Purchase" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="applyId" property="applyId" jdbcType="INTEGER" />
+        <result column="managerId" property="managerId" jdbcType="INTEGER" />
+        <result column="chiefId" property="chiefId" jdbcType="INTEGER" />
+        <result column="purchaseId" property="purchaseId" jdbcType="INTEGER" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="quantity" property="quantity" jdbcType="INTEGER" />
+        <result column="unit" property="unit" jdbcType="VARCHAR" />
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="reason" property="reason" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <insert id="insertPurchase" parameterType="cn.iverdon.vhrlixi.model.Purchase">
+        INSERT INTO purchase (applyId, managerId, chiefId, purchaseId, content, quantity, unit, reason)
+        VALUES (#{applyId},#{managerId}, #{chiefId}, #{purchaseId}, #{content}, #{quantity}, #{unit}, #{reason})
+    </insert>
+
+</mapper>

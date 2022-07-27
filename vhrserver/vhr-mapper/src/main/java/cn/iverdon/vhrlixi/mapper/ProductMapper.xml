@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.iverdon.vhrlixi.mapper.ProductMapper" >
+  <resultMap id="BaseResultMap" type="cn.iverdon.vhrlixi.model.Product" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="cost" property="cost" jdbcType="REAL" />
+    <result column="price" property="price" jdbcType="REAL" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="sum" property="sum" jdbcType="INTEGER" />
+  </resultMap>
+
+  <insert id="insertProduct" useGeneratedKeys="true" keyProperty="id">
+    insert into product (name, sum, cost, price, url)
+    values (#{name,jdbcType=VARCHAR}, #{sum,jdbcType=INTEGER}, #{cost,jdbcType=FLOAT},
+    #{price,jdbcType=FLOAT}, #{url,jdbcType=VARCHAR})
+  </insert>
+
+  <delete id="deleteById" parameterType="int">
+    delete from product
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insertProducts">
+    insert into product (name, sum,url)
+    values
+    <foreach collection="array" separator="," item="product">
+      (#{product.name, jdbcType=VARCHAR},#{product.sum,jdbcType=INTEGER},#{product.url,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+
+  <delete id="deleteProductsByName">
+    delete from product
+    where name in
+    <foreach collection="array" item="product" separator="," open="(" close=")">
+      #{product.name, jdbcType=VARCHAR}
+    </foreach>
+  </delete>
+
+  <update id="updateProducts">
+    update product
+     set name =
+     <foreach collection="array" item="product" open="case id" close="end," separator=" ">
+       when  #{product.id} then #{product.name}
+     </foreach>
+    sum =
+    <foreach collection="array" item="product" open="case id" close="end," separator=" ">
+      when  #{product.id} then #{product.sum}
+    </foreach>
+    url =
+    <foreach collection="array" item="product" open="case id" close="end" separator=" ">
+      when  #{product.id} then #{product.url}
+    </foreach>
+    where id in
+    <foreach collection="array" item="product" open="(" close=")" separator=",">
+      #{product.id}
+    </foreach>
+  </update>
+
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.iverdon.vhrlixi.mapper.QuotationCostMapper" >
+
+    <resultMap id="BaseResultMap" type="cn.iverdon.vhrlixi.model.Quotation" >
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="quotationNum" property="quotationNum" jdbcType="VARCHAR" />
+        <result column="clientNum" property="clientNum" jdbcType="VARCHAR" />
+        <result column="client" property="client" jdbcType="VARCHAR" />
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="isOffer" property="isOffer" jdbcType="BIT" />
+        <result column="department" property="department" jdbcType="VARCHAR" />
+        <result column="price" property="price" jdbcType="REAL" />
+        <result column="cost" property="cost" jdbcType="REAL" />
+        <result column="clientUrl" property="clientUrl" jdbcType="VARCHAR" />
+        <result column="isOrder" property="isOrder" jdbcType="BIT" />
+        <result column="isCost" property="isCost" jdbcType="BIT" />
+        <result column="isTax" property="isTax" jdbcType="BIT" />
+    </resultMap>
+
+    <resultMap id="QuotationWithProduct" type="cn.iverdon.vhrlixi.model.Quotation" extends="BaseResultMap">
+        <collection property="products" ofType="cn.iverdon.vhrlixi.model.Product">
+            <id column="id" property="id"></id>
+            <result column="name" property="name"></result>
+            <result column="cost" property="cost"></result>
+            <result column="price" property="price"></result>
+            <result column="url" property="url"></result>
+            <result column="sum" property="sum"></result>
+        </collection>
+    </resultMap>
+
+    <select id="getQuotationCostByPage" resultMap="BaseResultMap">
+        SELECT * FROM quotation ORDER BY isCost ASC, createTime DESC
+        <if test="page != null and size != null">
+            limit #{page},#{size};
+        </if>
+    </select>
+
+    <select id="getTotal" resultType="long">
+        select count(*) from quotation
+    </select>
+</mapper>

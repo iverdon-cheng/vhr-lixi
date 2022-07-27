@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.iverdon.vhrlixi.mapper.ProductProcessMapper" >
+
+
+    <insert id="insertBatch" parameterType="list">
+        insert into process_product (productId, processId, quantity)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.productId}, #{item.processId}, #{item.quantity})
+        </foreach>
+    </insert>
+
+    <select id="getProductProcessByQuotationNum" parameterType="string" resultType="cn.iverdon.vhrlixi.model.ProductProcess">
+        SELECT pp.id, pp.productId, pp.processId, pp.quantity, p.name AS process, p.cost, pr.name  FROM quotation q
+        RIGHT JOIN quotation_product qp ON q.clientNum = qp.clientNum
+        RIGHT JOIN product pr ON qp.`productNum` = pr.id
+        RIGHT JOIN process_product pp ON pp.`productId` = qp.`productNum`
+        RIGHT JOIN processes p ON p.`id` = pp.`processId`
+        WHERE q.quotationNum = #{quotationNum}
+    </select>
+
+    <update id="updateBatch" parameterType="list">
+        update process_product
+        set productId =
+        <foreach collection="list" item="item" separator=" " open="case id" close="end,">
+            when #{item.id} then #{item.productId}
+        </foreach>
+        processId =
+        <foreach collection="list" item="item" separator=" " open="case id" close="end,">
+            when #{item.id} then #{item.processId}
+        </foreach>
+        quantity =
+        <foreach collection="list" item="item" separator=" " open="case id" close="end">
+            when #{item.id} then #{item.quantity}
+        </foreach>
+        where id in
+        <foreach collection="list" item="product" open="(" close=")" separator=",">
+            #{product.id}
+        </foreach>
+    </update>
+
+    <delete id="deleteBatch" parameterType="list">
+        delete from process_product where id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item.id}
+        </foreach>
+    </delete>
+
+</mapper>
